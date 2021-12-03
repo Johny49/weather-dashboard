@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- TODO: Add favicon -->
-    <link rel="shortcut icon" href="./assets/images/favicon.png" type="image/png">
+    <!-- <link rel="shortcut icon" href="./assets/images/favicon.png" type="image/png"> -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
@@ -19,9 +19,9 @@
     </header>
     <main>
         <aside>
-            <form action="submit">
-                <input type="text" id="city-input" placeholder="Enter a city">
-                <button type="submit" id="search-btn"><i class="fa fa-search">Search</i></button>
+            <form action="submit" id="location-form">
+                <input name="location" type="text" id="location" autofocus="true" placeholder="Enter a city">
+                <button type="submit" class="btn" id="search-btn">Search</button>
             </form>
             <ul>
                 <!-- search history goes here -->
