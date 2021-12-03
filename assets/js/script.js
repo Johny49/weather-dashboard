@@ -21,14 +21,18 @@ function citySearch(cityInput) {
     // search geo api using user input
     if (cityInput != null) {
     // use geo api to find lat,lon for input city
-    apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=milwaukee&limit=1&appid=858d2ac1d226880ff65be3ab6336fd05";
+    apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityInput + "&limit=1&appid=858d2ac1d226880ff65be3ab6336fd05";
     fetch(apiUrl)
     .then(function (response) {
       if (response.ok) {
         response.json().then(function (data) {
-             var lat = data[0].lat;
-             var lon = data[0].lon;
-            getWeatherData(lat, lon)
+             const lat = data[0].lat;
+             const lon = data[0].lon;
+             console.log(lat);
+             console.log(lon);
+            //  store standardized name from api for display
+             const loc = data[0].name;
+            getWeatherData(lat, lon, loc)
         });
       } else {
         alert('Error: ' + response.statusText);
@@ -42,14 +46,18 @@ function citySearch(cityInput) {
     }
 }
 
-function getWeatherData(lat, lon) {
+function getWeatherData(lat, lon, loc) {
 var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=858d2ac1d226880ff65be3ab6336fd05"
 fetch(apiUrl)
 .then(function (response) {
   if (response.ok) {
     response.json().then(function (data) {
     // display returned info on screen
-    console.log(data);
+    cityNameEl.textContent = loc
+    tempEl.textContent = data.current.temp;
+    windEl.textContent = data.current.wind;
+    humidityEl.textContent = data.current.humidity;
+    uvIndexEl.textContent = data.current.uvi;
     });
   } else {
     alert("Error: " + response.statusText);
