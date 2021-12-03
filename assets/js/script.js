@@ -20,57 +20,58 @@ function formSubmitHandler(event) {
 function citySearch(cityInput) {
     // search geo api using user input
     if (cityInput != null) {
-    // use geo api to find lat,lon for input city
-    apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityInput + "&limit=1&appid=858d2ac1d226880ff65be3ab6336fd05";
-    fetch(apiUrl)
-    .then(function (response) {
-      if (response.ok) {
-        response.json().then(function (data) {
-             const lat = data[0].lat;
-             const lon = data[0].lon;
-             console.log(lat);
-             console.log(lon);
-            //  store standardized name from api for display
-             const loc = data[0].name;
-            getWeatherData(lat, lon, loc)
-        });
-      } else {
-        alert('Error: ' + response.statusText);
-      }
-    })
-    .catch(function (error) {
-      alert('Unable to retrieve location');
-    }); 
-} else {
+        // use geo api to find lat,lon for input city
+        apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityInput + "&limit=1&appid=858d2ac1d226880ff65be3ab6336fd05";
+        fetch(apiUrl)
+            .then(function (response) {
+                if (response.ok) {
+                    response.json().then(function (data) {
+                        const lat = data[0].lat;
+                        const lon = data[0].lon;
+                        console.log(lat);
+                        console.log(lon);
+                        //  store standardized name from api for display
+                        const loc = data[0].name;
+                        getWeatherData(lat, lon, loc)
+                    });
+                } else {
+                    alert('Error: ' + response.statusText);
+                }
+            })
+            .catch(function (error) {
+                alert('Unable to retrieve location');
+            });
+    } else {
         alert("Please enter a city");
     }
 }
 
 function getWeatherData(lat, lon, loc) {
-var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=858d2ac1d226880ff65be3ab6336fd05"
-fetch(apiUrl)
-.then(function (response) {
-  if (response.ok) {
-    response.json().then(function (data) {
-    // display returned info on screen
-    cityNameEl.textContent = loc
-    tempEl.textContent = data.current.temp;
-    windEl.textContent = data.current.wind;
-    humidityEl.textContent = data.current.humidity;
-    uvIndexEl.textContent = data.current.uvi;
-    });
-  } else {
-    alert("Error: " + response.statusText);
-  }
-})
-.catch(function (error) {
-  alert("Unable to connect");
-});
+    var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=858d2ac1d226880ff65be3ab6336fd05"
+    fetch(apiUrl)
+        .then(function (response) {
+            if (response.ok) {
+                response.json().then(function (data) {
+                    // display returned info on screen
+                    cityNameEl.textContent = loc
+                    CurrDateEl.textContent = moment().format("dddd, MMMM DD, YYYY");
+                    tempEl.textContent = data.current.temp;
+                    windEl.textContent = data.current.wind;
+                    humidityEl.textContent = data.current.humidity;
+                    uvIndexEl.textContent = data.current.uvi;
+                });
+            } else {
+                alert("Error: " + response.statusText);
+            }
+        })
+        .catch(function (error) {
+            alert("Unable to connect");
+        });
 }
 
 function changeTempUnit() {
-// use to specify query param for units; stored in local storage; imperial is default
-    (unitType = "imperial" ? "metric" : "imperial"); 
+    // use to specify query param for units; stored in local storage; imperial is default
+    (unitType = "imperial" ? "metric" : "imperial");
 }
 
 // Event Handlers
