@@ -50,16 +50,17 @@ function getWeatherData(lat, lon, loc) {
         .then(function (response) {
             if (response.ok) {
                 response.json().then(function (data) {
-                    // display returned info on screen
-                    var current = [{loc: loc, temp: Math.round(data.current.temp), wind: data.current.wind_speed, humidity: data.current.humidity, uvi: data.current.uvi}];
+                    // save current weather info, then call function to display on screen
+                    var current = [{loc: loc, temp: Math.round(data.current.temp), wind: data.current.wind_speed, humidity: data.current.humidity, uvi: data.current.uvi, icon_info: data.current.weather}];
                     displayCurrent(current);
-                    // cityNameEl.textContent = loc
-                    // currDateEl.textContent = moment().format("dddd, MMMM D, YYYY");
-                    // tempEl.textContent = Math.round(data.current.temp);
-                    // windEl.textContent = data.current.wind_speed;
-                    // humidityEl.textContent = data.current.humidity;
-                    // uvIndexEl.textContent = data.current.uvi;
+
+                    // save forecast info, then call function to display on screen
                     var forecast = [];
+                    for (var i = 0; i < 5; i++) {
+                        var day = [{maxTemp: Math.round(data.daily[i].temp.max), minTemp: Math.round(data.daily[i].temp.min), wind: data.daily[i].wind_speed, humidity: data.daily[i].humidity, icon_info: data.daily[i].weather
+                        }];
+                        forecast.push(day);
+                    }
                     displayForecast(forecast);
                 });
             } else {
@@ -67,25 +68,52 @@ function getWeatherData(lat, lon, loc) {
             }
         })
         .catch(function (error) {
-            alert("Unable to connect");
+            alert("Unable to access weather data");
         });
 }
 
 function displayCurrent(current) {
     // display returned info on 
-    console.log(current);
     cityNameEl.textContent = current[0].loc;
     currDateEl.textContent = moment().format("dddd, MMMM D, YYYY");
     tempEl.textContent = current[0].temp;
     windEl.textContent = current[0].wind;
     humidityEl.textContent = current[0].humidity + "%";
     uvIndexEl.textContent = current[0].uvi;
-    var forecast = [];
-    displayForecast(forecast);
 }
 
 function displayForecast(forecast) {
+    var forecastEl = document.querySelector(".forecast");
+    // loop through days in forecast and generate elements to display
 
+    for (day in forecast) {
+        var forecastCardEl = document.createElement(`forecast-card-${day}`);
+        forecastEl.appendChild(forecastCardEl);
+        var forecastDayEl = document.createElement(`day-${day}`);
+        forecastCardEl.appendChild(forecastDayEl);
+        forecastDayEl.textContent = day;
+        // forecastConditionImg = document.createElement('img');
+        // forecastConditionImg.src = ``; // TODO add link
+        // var conditionsIcon = "";
+        // forecastDayEl.appendChild(forecastConditionImg);
+        var lowTempEl = document.createElement(`low-temp-day${day}`);
+        lowTempEl.textContent = forecast[day][0].minTemp;
+        forecastCardEl.appendChild(lowTempEl);
+        var highTempEl = document.createElement(`high-temp-day${day}`);
+        highTempEl.textContent = forecast[day][0].maxTemp;
+        forecastCardEl.appendChild(highTempEl);
+        var windEl = document.createElement(`wind-day${day}`);
+        windEl.textContent = forecast[day][0].wind;
+        forecastCardEl.appendChild(windEl);
+        var humidityEl = document.createElement(`humidity-day${day}`);
+        humidityEl.textContent = forecast[day][0].humidity + "%";
+        forecastCardEl.appendChild(humidityEl);
+    }
+
+}
+
+function displayConditionsIcon() {
+    
 }
 
 function changeTempUnit() {

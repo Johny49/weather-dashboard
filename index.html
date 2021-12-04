@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- TODO: Add favicon -->
-    <!-- <link rel="shortcut icon" href="./assets/images/favicon.png" type="image/png"> -->
+    <link rel="shortcut icon" href="./assets/images/favicon.png" type="image/png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
@@ -18,7 +18,7 @@
         <button id="temp-unit-btn">F</button>
     </header>
     <main>
-        <aside>
+        <aside class="loc-search">
             <form action="submit" id="location-form">
                 <input name="location" type="text" id="location" autofocus="true" placeholder="Enter a city">
                 <button type="submit" class="btn" id="search-btn">Search</button>
@@ -27,12 +27,15 @@
                 <!-- search history goes here -->
             </ul>
         </aside>
-        <section>
+        <section class="current-weather">
             <!-- main weather card -->
-            <h2>CityName</h2> 
-            <h2 id="city-name">Anywhere</h2>
-            <h2>CurrentDate</h2>
-            <h2 id="current-date">Monday, June 13, 2021</h2>
+                <div class="card-header">
+                <h2>City Name:</h2> 
+                <h2 id="city-name">Anywhere</h2>
+                <h2>Current Date:</h2>
+                <h2 id="current-date">Monday, June 13, 2021</h2>
+                <img src="" alt="" id="current-conditions-icon">
+        </div>
             <h4>Temp:</h4>
             <h4 id="temp">84º F</h4>
             <h4>Wind:</h4>
@@ -42,7 +45,7 @@
             <h4>UV Index:</h4>
             <h4 id="uv-index">8</h4>
         </section>
-        <section>
+        <section class="forecast">
         <!-- 5 day forecast -->
 
         </section>
