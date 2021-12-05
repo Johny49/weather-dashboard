@@ -25,7 +25,7 @@ function citySearch(cityInput) {
     // search geo api using user input
     if (cityInput != null) {
         // use geo api to find lat,lon for input city
-        apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityInput + "&limit=1&appid=858d2ac1d226880ff65be3ab6336fd05";
+        apiUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + cityInput + "&limit=1&appid=858d2ac1d226880ff65be3ab6336fd05";
         fetch(apiUrl)
             .then(function (response) {
                 if (response.ok) {
@@ -149,7 +149,7 @@ function removeAllChildNodes(parent) {
 }
 
 function displayConditionsIcon(iconCode) {
-    return `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 }
 
 function setUVColor(uvValue) {
