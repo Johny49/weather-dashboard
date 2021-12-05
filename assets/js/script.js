@@ -201,7 +201,6 @@ function loadSavedLocations() {
 function setUnits() {
     //  retrieve preferred units from localStorage if exists
     var savedUnits = localStorage.getItem("saved-units") || "imperial";
-    console.log(savedUnits);
     // set units
     unitType = savedUnits;
     if (unitType === "metric") {
