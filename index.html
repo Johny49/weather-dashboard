@@ -22,15 +22,16 @@
     </header>
         <main class="d-flex flex-row">
             <aside class="loc-search d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 240px;">
-                <form action="submit" id="location-form">
+                <form action="submit" id="location-form" class="row p-1">
                     <input name="location" type="text" id="location" autofocus="true" placeholder="Enter a city">
                     <button type="submit" class="btn btn-primary my-2" id="search-btn">Search</button>
                 </form>
-                <section class="search-history">
+                <hr>
+                <section class="search-history row p-1">
                     <!-- search history goes here -->
                 </section>
             </aside>
-            <div class="weather-data-container col w-60 mx-4">
+            <div class="weather-data-container col mx-4">
             <section class="current-weather row-4 text-light bg-primary">
                 <!-- main weather card -->
                 <div class="card-header d-flex flex-row align-items-center justify-content-center">

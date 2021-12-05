@@ -1,6 +1,7 @@
 var tempUnitBtn = document.getElementById("temp-unit-btn");
 var cityInputEl = document.getElementById("location");
 var searchFormEl = document.getElementById("location-form");
+var searchHistoryEl = document.querySelector(".search-history");
 // main section elements
 var cityNameEl = document.getElementById("city-name");
 var currDateEl = document.getElementById("current-date");
@@ -28,15 +29,19 @@ function citySearch(cityInput) {
         fetch(apiUrl)
             .then(function (response) {
                 if (response.ok) {
-                    response.json().then(function (data) {
-                        const lat = data[0].lat;
-                        const lon = data[0].lon;
-                        //  store standardized name from api for display
-                        const loc = data[0].name;
-                        getWeatherData(lat, lon, loc)
-                        // save location to history
-                        // saveLocation(loc);
-                    });
+                        response.json().then(function (data) {
+                            if (data.length != 0) {
+                                const lat = data[0].lat;
+                                const lon = data[0].lon;
+                                //  store standardized name from api for display
+                                const loc = data[0].name;
+                                // save location to history
+                                saveLocation(loc);
+                                getWeatherData(lat, lon, loc)
+                            } else {
+                                alert('Unable to retrieve location');
+                            }
+                        });
                 } else {
                     alert('Error: ' + response.statusText);
                 }
@@ -56,13 +61,14 @@ function getWeatherData(lat, lon, loc) {
             if (response.ok) {
                 response.json().then(function (data) {
                     // save current weather info, then call function to display on screen
-                    var current = [{loc: loc, temp: Math.round(data.current.temp), wind: data.current.wind_speed, humidity: data.current.humidity, uvi: data.current.uvi, icon_info: data.current.weather}];
+                    var current = [{ loc: loc, temp: Math.round(data.current.temp), wind: data.current.wind_speed, humidity: data.current.humidity, uvi: data.current.uvi, icon_info: data.current.weather }];
                     displayCurrent(current);
 
                     // save forecast info, then call function to display on screen
                     var forecast = [];
                     for (var i = 0; i < 5; i++) {
-                        var day = [{maxTemp: Math.round(data.daily[i].temp.max), minTemp: Math.round(data.daily[i].temp.min), wind: data.daily[i].wind_speed, humidity: data.daily[i].humidity, icon_info: data.daily[i].weather
+                        var day = [{
+                            maxTemp: Math.round(data.daily[i].temp.max), minTemp: Math.round(data.daily[i].temp.min), wind: data.daily[i].wind_speed, humidity: data.daily[i].humidity, icon_info: data.daily[i].weather
                         }];
                         forecast.push(day);
                     }
@@ -91,6 +97,8 @@ function displayCurrent(current) {
     windEl.textContent = current[0].wind;
     humidityEl.textContent = current[0].humidity + "%";
     uvIndexEl.textContent = current[0].uvi;
+    uvIndexEl.style.borderRadius = "4px";
+    uvIndexEl.style.backgroundColor = setUVColor(current[0].uvi);
 }
 
 function displayForecast(forecast) {
@@ -106,9 +114,7 @@ function displayForecast(forecast) {
         forecastCardEl.appendChild(forecastDayEl);
         const tomorrow = moment().add(1, "days");
         forecastDayEl.textContent = tomorrow.add(day, "days").format("M/D/YYYY");
-        console.log("day= " + day + "moment: " + forecastDayEl.textContent);
         forecastConditionImg = document.createElement('img');
-        console.log(forecast[day][0]);
         forecastConditionImg.src = displayConditionsIcon(forecast[day][0].icon_info[0].icon);
         forecastConditionImg.alt = forecast[day][0].icon_info[0].description;
         // var conditionsIcon = "";
@@ -118,14 +124,14 @@ function displayForecast(forecast) {
             lowTempEl.textContent = "L " + forecast[day][0].minTemp + "°F";
         } else {
             lowTempEl.textContent = "L " + forecast[day][0].minTemp + "°C";
-        }       
+        }
         forecastCardEl.appendChild(lowTempEl);
         var highTempEl = document.createElement("p");
         if (unitType === "imperial") {
             highTempEl.textContent = "H " + forecast[day][0].maxTemp + "°F";
         } else {
             highTempEl.textContent = "H " + forecast[day][0].maxTemp + "°C";
-        }  
+        }
         forecastCardEl.appendChild(highTempEl);
         var windEl = document.createElement("p");
         windEl.textContent = "Wind: " + forecast[day][0].wind;
@@ -142,8 +148,19 @@ function removeAllChildNodes(parent) {
     }
 }
 
-function displayConditionsIcon(iconCode) { 
+function displayConditionsIcon(iconCode) {
     return `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+}
+
+function setUVColor(uvValue) {
+    switch (true) {
+        case (uvValue >= 5.5):
+            return "red";
+        case (uvValue >= 2.5):
+            return "darkgoldenrod";
+        default:
+            return "green";
+    }
 }
 
 function saveLocation(loc) {
@@ -159,23 +176,33 @@ function saveLocation(loc) {
     }
     // save to localStorage
     localStorage.setItem("saved-locations", JSON.stringify(savedLocations));
-
-    loadSavedLocations();
 }
 
 function loadSavedLocations() {
     // load any saved locations from localStorage and display as buttons
-    const savedLocations = JSON.parse(localStorage.getItem("saved-locations")) || [];
-    for (location of savedLocations) {
+    const savedLocations = (JSON.parse(localStorage.getItem("saved-locations"))).reverse() || [];
+    // for (location of savedLocations) {
+    //     console.log(location);
+    //     var savedLocBtn = document.createElement("button");
+    //     savedLocBtn.setAttribute("class", "btn btn-secondary btn-block my-1 saved-loc-btn");
+    //     console.log("saved location = " + location);
+    //     savedLocBtn.textContent = location;
+    //     search - history.appendChild(savedLocBtn);
+        // console.log(location);
+    // }
+    for (var i = 0; i < savedLocations.length; i++) {
+        console.log(savedLocations[i]);
         var savedLocBtn = document.createElement("button");
-        savedLocBtn.setAttribute("class", "btn btn-secondary");
-        savedLocBtn.textContent = location;
-        search-history.appendChild(savedLocBtn);
+        savedLocBtn.setAttribute("class", "btn btn-secondary btn-block my-1 saved-loc-btn");
+        savedLocBtn.textContent = savedLocations[i];
+        searchHistoryEl.appendChild(savedLocBtn);
     }
+
+    console.log("save location function called");
 }
 
 function setUnits() {
-//  retrieve preferred units from localStorage if exists
+    //  retrieve preferred units from localStorage if exists
     var savedUnits = localStorage.getItem("saved-units");
     // set units
     unitType = savedUnits;
@@ -199,14 +226,17 @@ function changeTempUnit() {
 
     // redo current search with new unit unless search field is empty
     var cityInput = cityInputEl.value.trim();
-        if (cityInput != "") {
-            citySearch(cityInput);
-        }
+    if (cityInput != "") {
+        citySearch(cityInput);
+    }
 }
 
 setUnits();
-// loadSavedLocations();
+loadSavedLocations();
 
 // Event Handlers
 tempUnitBtn.addEventListener("click", changeTempUnit);
 searchFormEl.addEventListener('submit', formSubmitHandler);
+searchHistoryEl.addEventListener("click", function (event) {
+    citySearch(event.target.textContent);
+})
