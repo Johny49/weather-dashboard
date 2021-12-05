@@ -30,9 +30,9 @@ Created by [@johny49](https://github.com/Johny49/) - feel free to contact me!
 
 ## Technologies
 - HTML
-- CSS
-- Moments
+- JavaScript
 - Bootstrap
+- Moment
 - Open Weather One Call and Geocoding APIs
 
 ## Project Status

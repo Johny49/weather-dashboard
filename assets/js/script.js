@@ -29,19 +29,19 @@ function citySearch(cityInput) {
         fetch(apiUrl)
             .then(function (response) {
                 if (response.ok) {
-                        response.json().then(function (data) {
-                            if (data.length != 0) {
-                                const lat = data[0].lat;
-                                const lon = data[0].lon;
-                                //  store standardized name from api for display
-                                const loc = data[0].name;
-                                // save location to history
-                                saveLocation(loc);
-                                getWeatherData(lat, lon, loc)
-                            } else {
-                                alert('Unable to retrieve location');
-                            }
-                        });
+                    response.json().then(function (data) {
+                        if (data.length != 0) {
+                            const lat = data[0].lat;
+                            const lon = data[0].lon;
+                            //  store standardized name from api for display
+                            const loc = data[0].name;
+                            // save location to history
+                            saveLocation(loc);
+                            getWeatherData(lat, lon, loc)
+                        } else {
+                            alert('Unable to retrieve location');
+                        }
+                    });
                 } else {
                     alert('Error: ' + response.statusText);
                 }
@@ -176,29 +176,26 @@ function saveLocation(loc) {
     }
     // save to localStorage
     localStorage.setItem("saved-locations", JSON.stringify(savedLocations));
+
+    loadSavedLocations();
 }
 
 function loadSavedLocations() {
+    // clear any existing locations
+    removeAllChildNodes(searchHistoryEl);
     // load any saved locations from localStorage and display as buttons
-    const savedLocations = (JSON.parse(localStorage.getItem("saved-locations"))).reverse() || [];
-    // for (location of savedLocations) {
-    //     console.log(location);
-    //     var savedLocBtn = document.createElement("button");
-    //     savedLocBtn.setAttribute("class", "btn btn-secondary btn-block my-1 saved-loc-btn");
-    //     console.log("saved location = " + location);
-    //     savedLocBtn.textContent = location;
-    //     search - history.appendChild(savedLocBtn);
-        // console.log(location);
-    // }
-    for (var i = 0; i < savedLocations.length; i++) {
-        console.log(savedLocations[i]);
-        var savedLocBtn = document.createElement("button");
-        savedLocBtn.setAttribute("class", "btn btn-secondary btn-block my-1 saved-loc-btn");
-        savedLocBtn.textContent = savedLocations[i];
-        searchHistoryEl.appendChild(savedLocBtn);
+    var savedLocations = JSON.parse(localStorage.getItem("saved-locations")) || [];
+    
+    if (savedLocations.length !== 0) {
+        // reverse saved values to display most recent searches first
+        savedLocations.reverse() 
+        for (var i = 0; i < savedLocations.length; i++) {
+            var savedLocBtn = document.createElement("button");
+            savedLocBtn.setAttribute("class", "btn btn-secondary btn-block my-1 saved-loc-btn");
+            savedLocBtn.textContent = savedLocations[i];
+            searchHistoryEl.appendChild(savedLocBtn);
+        }
     }
-
-    console.log("save location function called");
 }
 
 function setUnits() {
