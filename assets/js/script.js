@@ -14,7 +14,9 @@ var unitType = "imperial";
 function formSubmitHandler(event) {
     event.preventDefault();
     var cityInput = cityInputEl.value.trim();
-    citySearch(cityInput);
+    if (cityInput != "") {
+        citySearch(cityInput);
+    }
 }
 
 function citySearch(cityInput) {
@@ -76,7 +78,11 @@ function displayCurrent(current) {
     // display returned info on 
     cityNameEl.textContent = current[0].loc;
     currDateEl.textContent = moment().format("dddd, MMMM D, YYYY");
-    tempEl.textContent = current[0].temp;
+    if (unitType === "imperial") {
+        tempEl.textContent = current[0].temp + "°F";
+    } else {
+        tempEl.textContent = current[0].temp + "°C";
+    }
     windEl.textContent = current[0].wind;
     humidityEl.textContent = current[0].humidity + "%";
     uvIndexEl.textContent = current[0].uvi;
@@ -87,26 +93,35 @@ function displayForecast(forecast) {
     // loop through days in forecast and generate elements to display
 
     for (day in forecast) {
-        var forecastCardEl = document.createElement(`forecast-card-${day}`);
+        var forecastCardEl = document.createElement("section");
+        forecastCardEl.setAttribute("class", "col p-2 m-1 bg-primary text-white");
         forecastEl.appendChild(forecastCardEl);
-        var forecastDayEl = document.createElement(`day-${day}`);
+        var forecastDayEl = document.createElement("h5");
         forecastCardEl.appendChild(forecastDayEl);
         forecastDayEl.textContent = day;
         // forecastConditionImg = document.createElement('img');
         // forecastConditionImg.src = ``; // TODO add link
         // var conditionsIcon = "";
         // forecastDayEl.appendChild(forecastConditionImg);
-        var lowTempEl = document.createElement(`low-temp-day${day}`);
-        lowTempEl.textContent = forecast[day][0].minTemp;
+        var lowTempEl = document.createElement("p");
+        if (unitType === "imperial") {
+            lowTempEl.textContent = "L " + forecast[day][0].minTemp + "°F";
+        } else {
+            lowTempEl.textContent = "L " + forecast[day][0].minTemp + "°C";
+        }       
         forecastCardEl.appendChild(lowTempEl);
-        var highTempEl = document.createElement(`high-temp-day${day}`);
-        highTempEl.textContent = forecast[day][0].maxTemp;
+        var highTempEl = document.createElement("p");
+        if (unitType === "imperial") {
+            highTempEl.textContent = "H " + forecast[day][0].maxTemp + "°F";
+        } else {
+            highTempEl.textContent = "H " + forecast[day][0].maxTemp + "°C";
+        }  
         forecastCardEl.appendChild(highTempEl);
-        var windEl = document.createElement(`wind-day${day}`);
-        windEl.textContent = forecast[day][0].wind;
+        var windEl = document.createElement("p");
+        windEl.textContent = "Wind: " + forecast[day][0].wind;
         forecastCardEl.appendChild(windEl);
-        var humidityEl = document.createElement(`humidity-day${day}`);
-        humidityEl.textContent = forecast[day][0].humidity + "%";
+        var humidityEl = document.createElement("p");
+        humidityEl.textContent = "Humidity:" + forecast[day][0].humidity + "%";
         forecastCardEl.appendChild(humidityEl);
     }
 
@@ -127,7 +142,6 @@ function changeTempUnit() {
     }
     // redo current search with new unit
     var cityInput = cityInputEl.value.trim();
-    console.log(cityInput);
         if (cityInput != "") {
             citySearch(cityInput);
         }
