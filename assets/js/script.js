@@ -33,6 +33,8 @@ function citySearch(cityInput) {
                         if (data.length != 0) {
                             const lat = data[0].lat;
                             const lon = data[0].lon;
+                            // clear search field
+                            cityInputEl.value = "";
                             //  store standardized name from api for display
                             const loc = data[0].name;
                             // save location to history
@@ -185,10 +187,10 @@ function loadSavedLocations() {
     removeAllChildNodes(searchHistoryEl);
     // load any saved locations from localStorage and display as buttons
     var savedLocations = JSON.parse(localStorage.getItem("saved-locations")) || [];
-    
+
     if (savedLocations.length !== 0) {
         // reverse saved values to display most recent searches first
-        savedLocations.reverse() 
+        savedLocations.reverse()
         for (var i = 0; i < savedLocations.length; i++) {
             var savedLocBtn = document.createElement("button");
             savedLocBtn.setAttribute("class", "btn btn-secondary btn-block my-1 saved-loc-btn");
