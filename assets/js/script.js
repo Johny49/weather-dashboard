@@ -4,6 +4,7 @@ var searchFormEl = document.getElementById("location-form");
 // main section elements
 var cityNameEl = document.getElementById("city-name");
 var currDateEl = document.getElementById("current-date");
+var currentConditionsImg = document.getElementById("current-conditions-icon");
 var tempEl = document.getElementById("temp");
 var windEl = document.getElementById("wind");
 var humidityEl = document.getElementById("humidity");
@@ -33,6 +34,8 @@ function citySearch(cityInput) {
                         //  store standardized name from api for display
                         const loc = data[0].name;
                         getWeatherData(lat, lon, loc)
+                        // save location to history
+                        // saveLocation(loc);
                     });
                 } else {
                     alert('Error: ' + response.statusText);
@@ -78,6 +81,8 @@ function displayCurrent(current) {
     // display returned info on 
     cityNameEl.textContent = current[0].loc;
     currDateEl.textContent = moment().format("dddd, MMMM D, YYYY");
+    currentConditionsImg.src = displayConditionsIcon(current[0].icon_info[0].icon);
+    currentConditionsImg.alt = current[0].icon_info[0].description;
     if (unitType === "imperial") {
         tempEl.textContent = current[0].temp + "°F";
     } else {
@@ -90,19 +95,24 @@ function displayCurrent(current) {
 
 function displayForecast(forecast) {
     var forecastEl = document.querySelector(".forecast");
+    // remove any existing child elements
+    removeAllChildNodes(forecastEl);
     // loop through days in forecast and generate elements to display
-
     for (day in forecast) {
         var forecastCardEl = document.createElement("section");
-        forecastCardEl.setAttribute("class", "col p-2 m-1 bg-primary text-white");
+        forecastCardEl.setAttribute("class", `col-md-3 col-sm-4 col-lg p-2 m-1 bg-primary text-white ${day}`);
         forecastEl.appendChild(forecastCardEl);
         var forecastDayEl = document.createElement("h5");
         forecastCardEl.appendChild(forecastDayEl);
-        forecastDayEl.textContent = day;
-        // forecastConditionImg = document.createElement('img');
-        // forecastConditionImg.src = ``; // TODO add link
+        const tomorrow = moment().add(1, "days");
+        forecastDayEl.textContent = tomorrow.add(day, "days").format("M/D/YYYY");
+        console.log("day= " + day + "moment: " + forecastDayEl.textContent);
+        forecastConditionImg = document.createElement('img');
+        console.log(forecast[day][0]);
+        forecastConditionImg.src = displayConditionsIcon(forecast[day][0].icon_info[0].icon);
+        forecastConditionImg.alt = forecast[day][0].icon_info[0].description;
         // var conditionsIcon = "";
-        // forecastDayEl.appendChild(forecastConditionImg);
+        forecastDayEl.appendChild(forecastConditionImg);
         var lowTempEl = document.createElement("p");
         if (unitType === "imperial") {
             lowTempEl.textContent = "L " + forecast[day][0].minTemp + "°F";
@@ -124,29 +134,79 @@ function displayForecast(forecast) {
         humidityEl.textContent = "Humidity:" + forecast[day][0].humidity + "%";
         forecastCardEl.appendChild(humidityEl);
     }
-
 }
 
-function displayConditionsIcon() {
-    
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+function displayConditionsIcon(iconCode) { 
+    return `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+}
+
+function saveLocation(loc) {
+    // retrieve existing saved array or create new;
+    var savedLocations = JSON.parse(localStorage.getItem("saved-locations")) || [];
+
+    // check for duplicate and add location if unique; if exists already, move to top of list
+    if (savedLocations.includes(loc)) {
+        const index = savedLocations.indexOf(loc);
+        savedLocations.push(savedLocations.splice(index, 1)[0]);
+    } else {
+        savedLocations.push(loc);
+    }
+    // save to localStorage
+    localStorage.setItem("saved-locations", JSON.stringify(savedLocations));
+
+    loadSavedLocations();
+}
+
+function loadSavedLocations() {
+    // load any saved locations from localStorage and display as buttons
+    const savedLocations = JSON.parse(localStorage.getItem("saved-locations")) || [];
+    for (location of savedLocations) {
+        var savedLocBtn = document.createElement("button");
+        savedLocBtn.setAttribute("class", "btn btn-secondary");
+        savedLocBtn.textContent = location;
+        search-history.appendChild(savedLocBtn);
+    }
+}
+
+function setUnits() {
+//  retrieve preferred units from localStorage if exists
+    var savedUnits = localStorage.getItem("saved-units");
+    // set units
+    unitType = savedUnits;
+    if (unitType === "metric") {
+        tempUnitBtn.textContent = "C";
+    } else {
+        tempUnitBtn.textContent = "F";
+    }
 }
 
 function changeTempUnit() {
     // use to specify query param for units; stored in local storage; imperial is default
     if (unitType === "imperial") {
         unitType = "metric";
-        tempUnitBtn.textContent = "C" 
+        tempUnitBtn.textContent = "C";
     } else {
         unitType = "imperial";
         tempUnitBtn.textContent = "F";
     }
-    // redo current search with new unit
+    localStorage.setItem("saved-units", unitType);
+
+    // redo current search with new unit unless search field is empty
     var cityInput = cityInputEl.value.trim();
         if (cityInput != "") {
             citySearch(cityInput);
         }
 }
 
+setUnits();
+// loadSavedLocations();
+
 // Event Handlers
-searchFormEl.addEventListener('submit', formSubmitHandler);
 tempUnitBtn.addEventListener("click", changeTempUnit);
+searchFormEl.addEventListener('submit', formSubmitHandler);
